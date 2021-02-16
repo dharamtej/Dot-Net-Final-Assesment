@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewData["Title"] = "IndexJquery";
+}
+
+<h1>Index Jquery</h1>
+
+<input type="button" class="btn btn-success" onclick="ListRecords()" value="List Records" />
+<a href="Create">Create</a>
+<div class="text-danger" id="divMessage"></div>
+<p>
+    List of records from secured Web API, being called from jQuery/JavaScript.
+</p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>CustomerId</th>
+            <th>CustomerName</th>
+            <th>CustomerAddress</th>
+           
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+@section Scripts
+{
+    <script>
+        function ListRecords() {
+            $.ajax({
+                url: "https://localhost:44334/api/customers",
+                type: "get",
+                contentType: "application/json",
+                success: function (result, status, xhr) {
+                    var tr = '';
+                    $.each(result, function (index, value) {
+                        tr += '<tr>' +
+                            '<td>' + value["customerId"] + '</td><td>' + value["customerName"] + '</td>' +
+                            '<td>' + value["customerAddress"] + '</td>'+
+                            '</tr>';
+                    });
+                    $("tbody").append(tr);
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                    if (xhr.status == 401) {
+                        $("#divMessage").html('Please <a href="/Home/Login">login</a> and try again.');
+                    }
+                    else {
+                        $("#divMessage").html(JSON.stringify(xhr));
+                    }
+                }
+            });
+        }
+    </script>
+}
+
